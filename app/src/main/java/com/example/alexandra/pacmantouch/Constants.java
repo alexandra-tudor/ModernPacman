@@ -1,8 +1,4 @@
-package com.example.catalin.bombermantouch;
-
-/**
- * Created by Catalin on 11-Dec-16.
- */
+package com.example.alexandra.pacmantouch;
 
 public class Constants {
 

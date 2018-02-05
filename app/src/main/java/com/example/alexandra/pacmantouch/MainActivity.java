@@ -1,16 +1,14 @@
-package com.example.catalin.bombermantouch;
+package com.example.alexandra.pacmantouch;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity {
 

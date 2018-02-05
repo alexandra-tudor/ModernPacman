@@ -1,4 +1,4 @@
-package com.example.catalin.bombermantouch;
+package com.example.alexandra.pacmantouch;
 
 import android.content.Context;
 import android.graphics.Bitmap;

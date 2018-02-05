@@ -1,26 +1,15 @@
-package com.example.catalin.bombermantouch;
-
+package com.example.alexandra.pacmantouch;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLUtils;
-import android.opengl.Matrix;
-import android.util.Log;
-import android.view.Display;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
 
 /**
  * Created by Catalin on 19-Nov-16.

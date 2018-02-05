@@ -1,4 +1,4 @@
-package com.example.catalin.bombermantouch;
+package com.example.alexandra.pacmantouch;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,10 +11,10 @@ public class MainMenuActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu);
+        setContentView(com.example.alexandra.pacmantouch.R.layout.activity_main_menu);
 
 
-        Button btnNewGame = (Button) findViewById(R.id.btnNewGame);
+        Button btnNewGame = (Button) findViewById(com.example.alexandra.pacmantouch.R.id.btnNewGame);
         btnNewGame.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Intent myIntent = new Intent(MainMenuActivity.this, LevelChooseActivity.class);
@@ -23,7 +23,7 @@ public class MainMenuActivity extends Activity {
         });
 
 
-        Button btnExitGame = (Button) findViewById(R.id.btnExit);
+        Button btnExitGame = (Button) findViewById(com.example.alexandra.pacmantouch.R.id.btnExit);
         btnExitGame.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 finish();

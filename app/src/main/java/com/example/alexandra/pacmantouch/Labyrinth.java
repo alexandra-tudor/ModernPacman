@@ -1,9 +1,8 @@
-package com.example.catalin.bombermantouch;
+package com.example.alexandra.pacmantouch;
 
 import android.content.Context;
 import android.graphics.Point;
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.IOException;
@@ -121,12 +120,12 @@ class Labyrinth {
     private Player player;
 
     private void CreateSounds() {
-        mediaPlayerEat = MediaPlayer.create(ctx, R.raw.sound_eat);
-        mediaPlayerTrap = MediaPlayer.create(ctx, R.raw.trap);
-        mediaPlayerNoPath = MediaPlayer.create(ctx, R.raw.sound_no_path);
-        mediaPlayerEnemyEat = MediaPlayer.create(ctx, R.raw.sound_enemy_eat);
-        mediaPlayerDangerBackground = MediaPlayer.create(ctx, R.raw.danger_background_music);
-        mediaPlayerLoseLife = MediaPlayer.create(ctx, R.raw.lost_life);
+        mediaPlayerEat = MediaPlayer.create(ctx, com.example.alexandra.pacmantouch.R.raw.sound_eat);
+        mediaPlayerTrap = MediaPlayer.create(ctx, com.example.alexandra.pacmantouch.R.raw.trap);
+        mediaPlayerNoPath = MediaPlayer.create(ctx, com.example.alexandra.pacmantouch.R.raw.sound_no_path);
+        mediaPlayerEnemyEat = MediaPlayer.create(ctx, com.example.alexandra.pacmantouch.R.raw.sound_enemy_eat);
+        mediaPlayerDangerBackground = MediaPlayer.create(ctx, com.example.alexandra.pacmantouch.R.raw.danger_background_music);
+        mediaPlayerLoseLife = MediaPlayer.create(ctx, com.example.alexandra.pacmantouch.R.raw.lost_life);
     }
 
     Labyrinth(Context ctx, int numberOfEnemies, Point screenSize, int level) {
@@ -463,37 +462,37 @@ class Labyrinth {
     }
 
     private void LoadTextures() {
-        wallTexture = GraphicTools.SetupImage(R.drawable.wall, ctx);
-        concreteTexture = GraphicTools.SetupImage(R.drawable.concrete, ctx);
+        wallTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.wall, ctx);
+        concreteTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.concrete, ctx);
 
-        pacmanDownTexture = GraphicTools.SetupImage(R.drawable.pacman_down, ctx);
-        pacmanUpTexture = GraphicTools.SetupImage(R.drawable.pacman_up, ctx);
-        pacmanRightTexture = GraphicTools.SetupImage(R.drawable.pacman_right, ctx);
-        pacmanLeftTexture = GraphicTools.SetupImage(R.drawable.pacman_left, ctx);
+        pacmanDownTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.pacman_down, ctx);
+        pacmanUpTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.pacman_up, ctx);
+        pacmanRightTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.pacman_right, ctx);
+        pacmanLeftTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.pacman_left, ctx);
 
-        pacmanWhiteDownTexture = GraphicTools.SetupImage(R.drawable.white_pacman_down, ctx);
-        pacmanWhiteUpTexture = GraphicTools.SetupImage(R.drawable.white_pacman_up, ctx);
-        pacmanWhiteRightTexture = GraphicTools.SetupImage(R.drawable.white_pacman_right, ctx);
-        pacmanWhiteLeftTexture = GraphicTools.SetupImage(R.drawable.white_pacman_left, ctx);
+        pacmanWhiteDownTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.white_pacman_down, ctx);
+        pacmanWhiteUpTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.white_pacman_up, ctx);
+        pacmanWhiteRightTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.white_pacman_right, ctx);
+        pacmanWhiteLeftTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.white_pacman_left, ctx);
 
-        enemy1Texture = GraphicTools.SetupImage(R.drawable.enemy1, ctx);
-        enemy1TextureEat = GraphicTools.SetupImage(R.drawable.enemy1_eat, ctx);
-        enemy2Texture = GraphicTools.SetupImage(R.drawable.enemy2, ctx);
-        enemy2TextureEat = GraphicTools.SetupImage(R.drawable.enemy2_eat, ctx);
-        enemy3Texture = GraphicTools.SetupImage(R.drawable.enemy3, ctx);
-        enemy3TextureEat = GraphicTools.SetupImage(R.drawable.enemy3_eat, ctx);
-        enemy4Texture = GraphicTools.SetupImage(R.drawable.enemy4, ctx);
-        enemy4TextureEat = GraphicTools.SetupImage(R.drawable.enemy4_eat, ctx);
-        enemy5Texture = GraphicTools.SetupImage(R.drawable.enemy5, ctx);
-        enemy5TextureEat = GraphicTools.SetupImage(R.drawable.enemy5_eat, ctx);
-        enemyAngelTexture = GraphicTools.SetupImage(R.drawable.enemy_angel, ctx);
+        enemy1Texture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy1, ctx);
+        enemy1TextureEat = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy1_eat, ctx);
+        enemy2Texture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy2, ctx);
+        enemy2TextureEat = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy2_eat, ctx);
+        enemy3Texture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy3, ctx);
+        enemy3TextureEat = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy3_eat, ctx);
+        enemy4Texture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy4, ctx);
+        enemy4TextureEat = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy4_eat, ctx);
+        enemy5Texture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy5, ctx);
+        enemy5TextureEat = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy5_eat, ctx);
+        enemyAngelTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.enemy_angel, ctx);
 
-        redDotTexture = GraphicTools.SetupImage(R.drawable.dot_red, ctx);
-        yellowDotTexture = GraphicTools.SetupImage(R.drawable.dot_yellow, ctx);
-        greenDotTexture = GraphicTools.SetupImage(R.drawable.dot_green, ctx);
-        powerUpTexture = GraphicTools.SetupImage(R.drawable.dot_power_up, ctx);
+        redDotTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.dot_red, ctx);
+        yellowDotTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.dot_yellow, ctx);
+        greenDotTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.dot_green, ctx);
+        powerUpTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.dot_power_up, ctx);
 
-        trapTexture = GraphicTools.SetupImage(R.drawable.trap, ctx);
+        trapTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.trap, ctx);
     }
 
     void Draw(int frames) throws IOException {

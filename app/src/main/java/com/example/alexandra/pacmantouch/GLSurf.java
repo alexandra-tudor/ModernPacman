@@ -1,10 +1,8 @@
-package com.example.catalin.bombermantouch;
+package com.example.alexandra.pacmantouch;
 
-import android.app.Notification;
 import android.content.Context;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 import android.view.MotionEvent;
 
 /**

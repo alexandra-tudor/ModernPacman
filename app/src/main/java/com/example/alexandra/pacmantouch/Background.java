@@ -1,4 +1,4 @@
-package com.example.catalin.bombermantouch;
+package com.example.alexandra.pacmantouch;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -90,13 +90,13 @@ class Background {
     {
         switch(this.level) {
             case Constants.EasyLevel:
-                backgroundTexture = GraphicTools.SetupImage(R.drawable.grass, ctx);
+                backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.grass, ctx);
                 break;
             case Constants.MediumLevel:
-                backgroundTexture = GraphicTools.SetupImage(R.drawable.leaves, ctx);
+                backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.leaves, ctx);
                 break;
             case Constants.HardLevel:
-                backgroundTexture = GraphicTools.SetupImage(R.drawable.ice, ctx);
+                backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.ice, ctx);
                 break;
         }
 
