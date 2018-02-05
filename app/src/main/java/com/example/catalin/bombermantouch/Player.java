@@ -17,6 +17,8 @@ class Player {
     private int program;
     private int texture;
     private int brickNumber;
+    private int powerUPTimer;
+    private int lives;
     private Constants.PowerUP powerUp;
 
     private static float uvs[] = new float[]{
@@ -33,21 +35,46 @@ class Player {
 
     private final int vertexStride = Constants.CoordsPerVertex * 4; // 4 bytes per vertex
 
+    int getTexture() {
+        return this.texture;
+    }
+
     void setTexture(int texture) {
         this.texture = texture;
     }
 
-    Player(float[] position, int program, int texture, int brickNumber) {
+    Player(float[] position, int program, int texture, int brickNumber, int lives) {
         this.playerCoords = position;
         this.program = program;
         this.texture = texture;
         this.brickNumber = brickNumber;
         this.powerUp = Constants.PowerUP.Normal;
+        this.powerUPTimer = 0;
+        this.lives = lives;
         CreateBuffers();
     }
 
+    int getPowerUPTimer() {
+        return powerUPTimer;
+    }
+
+    void decreasePowerUPTimer() {
+        this.powerUPTimer --;
+    }
     boolean hasPowerUp() {
         return powerUp != Constants.PowerUP.Normal;
+    }
+
+    void decreaseLives() {
+        this.lives --;
+    }
+
+    boolean areAllLivesLost() {
+        return this.lives == 0;
+    }
+
+    void setPowerUpTimer(int powerUPTimer) {
+        this.powerUPTimer = powerUPTimer;
     }
 
     Constants.PowerUP getPowerUp() {

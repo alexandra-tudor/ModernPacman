@@ -84,12 +84,10 @@ class Enemy {
         return stepsHome;
     }
 
-
     int getEnemyType()
     {
         return enemyType;
     }
-
 
     void move(int newPosition, ArrayList<Brick> bricks) {
         this.brickNumber = newPosition;

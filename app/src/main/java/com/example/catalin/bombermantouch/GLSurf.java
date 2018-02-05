@@ -47,10 +47,10 @@ public class GLSurf extends GLSurfaceView {
                 float dx = x - mPreviousX;
                 float dy = y - mPreviousY;
 
-                Log.d("Action_Move", "x: " + x + " y: " + y);
+                // Log.d("Action_Move", "x: " + x + " y: " + y);
                 break;
             case MotionEvent.ACTION_UP:
-                Log.d("Action_UP", "x: " + x + " y: " + y);
+                // Log.d("Action_UP", "x: " + x + " y: " + y);
                 mRenderer.performAction(Constants.ActionType.Move, x, y);
         }
 

@@ -80,6 +80,10 @@ public class Brick {
         this.brickType = brickType;
     }
 
+    Constants.BrickType getBrickType() {
+        return brickType;
+    }
+
     int getBrickNumber()
     {
         return brickNumber;
@@ -94,7 +98,7 @@ public class Brick {
     }
 
     boolean isFree() {
-        return brickType == Constants.BrickType.Free;
+        return brickType == Constants.BrickType.Free || brickType == Constants.BrickType.PowerUp;
     }
 
     boolean isConcrete() {

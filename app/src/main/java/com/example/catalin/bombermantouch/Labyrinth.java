@@ -68,6 +68,7 @@ class Labyrinth {
     private MediaPlayer mediaPlayerEat;
     private MediaPlayer mediaPlayerNoPath;
     private MediaPlayer mediaPlayerEnemyEat;
+    private MediaPlayer mediaPlayerLoseLife;
     private MediaPlayer mediaPlayerDangerBackground;
 
     private int labyrinthSizeX;
@@ -90,6 +91,11 @@ class Labyrinth {
     private int pacmanDownTexture;
     private int pacmanLeftTexture;
     private int pacmanRightTexture;
+
+    private int pacmanWhiteUpTexture;
+    private int pacmanWhiteDownTexture;
+    private int pacmanWhiteLeftTexture;
+    private int pacmanWhiteRightTexture;
 
     private int enemy1Texture;
     private int enemy1TextureEat;
@@ -116,6 +122,7 @@ class Labyrinth {
         mediaPlayerNoPath = MediaPlayer.create(ctx, R.raw.sound_no_path);
         mediaPlayerEnemyEat = MediaPlayer.create(ctx, R.raw.sound_enemy_eat);
         mediaPlayerDangerBackground = MediaPlayer.create(ctx, R.raw.danger_background_music);
+        mediaPlayerLoseLife = MediaPlayer.create(ctx, R.raw.lost_life);
     }
 
     Labyrinth(Context ctx, int numberOfEnemies, Point screenSize, int level) {
@@ -297,8 +304,8 @@ class Labyrinth {
 
         // x = 1280
         // y = 720
-        Log.d("Resolution", screenSize.x + " dsfdsa " + screenSize.y);
-        Log.d("BrickSize", brickSizeX + "" + brickSizeY);
+        // Log.d("Resolution", screenSize.x + " dsfdsa " + screenSize.y);
+        // Log.d("BrickSize", brickSizeX + "" + brickSizeY);
 
 
         bricks = new ArrayList<>();
@@ -328,7 +335,7 @@ class Labyrinth {
                         bricks.add(new Brick(crtBrick, Constants.BrickType.Free, brickCoords, program, getCurrentDotTexture(i % 3), true));
                         break;
                     case PowerUp:
-                        bricks.add(new Brick(crtBrick, Constants.BrickType.Free, brickCoords, program, powerUpTexture, true));
+                        bricks.add(new Brick(crtBrick, Constants.BrickType.PowerUp, brickCoords, program, powerUpTexture, true));
                         break;
                     default:
                         bricks.add(new Brick(crtBrick, GetBrickTypeFromMap(crtBrick), brickCoords, program, wallTexture, false));
@@ -394,8 +401,8 @@ class Labyrinth {
                 xPos + playerSizeX, yPos + playerSizeY, 0.1f,
                 xPos + playerSizeX, yPos, 0.1f
         };
-        player = new Player(playerCoords, program, pacmanLeftTexture, labyrinthSizeX + 1);
-        player.setPowerUP(Constants.PowerUP.Invicibility);
+        player = new Player(playerCoords, program, pacmanLeftTexture, labyrinthSizeX + 1, Constants.StartLives);
+        //player.setPowerUP(Constants.PowerUP.Invicibility);
         bricks.get(labyrinthSizeX + 1).setPlayerHere(true);
     }
 
@@ -451,6 +458,11 @@ class Labyrinth {
         pacmanRightTexture = GraphicTools.SetupImage(R.drawable.pacman_right, ctx);
         pacmanLeftTexture = GraphicTools.SetupImage(R.drawable.pacman_left, ctx);
 
+        pacmanWhiteDownTexture = GraphicTools.SetupImage(R.drawable.white_pacman_down, ctx);
+        pacmanWhiteUpTexture = GraphicTools.SetupImage(R.drawable.white_pacman_up, ctx);
+        pacmanWhiteRightTexture = GraphicTools.SetupImage(R.drawable.white_pacman_right, ctx);
+        pacmanWhiteLeftTexture = GraphicTools.SetupImage(R.drawable.white_pacman_left, ctx);
+
         enemy1Texture = GraphicTools.SetupImage(R.drawable.enemy1, ctx);
         enemy1TextureEat = GraphicTools.SetupImage(R.drawable.enemy1_eat, ctx);
         enemy2Texture = GraphicTools.SetupImage(R.drawable.enemy2, ctx);
@@ -473,26 +485,53 @@ class Labyrinth {
         for (Brick b : bricks) {
             b.Draw();
         }
-
         if (frames % 2 == 0 && !playerSteps.isEmpty()) {
             int nextPosition = playerSteps.get(0);
-            Log.d("[Draw]", "playerPosition: " + nextPosition);
+            // Log.d("[Draw]", "playerPosition: " + nextPosition);
             playerSteps.remove(0);
+
+            if (player.hasPowerUp()) {
+                if (player.getPowerUPTimer() > 0) {
+                    player.decreasePowerUPTimer();
+                } else {
+                    player.setPowerUP(Constants.PowerUP.Normal);
+                }
+            }
 
             Brick nextBrick = bricks.get(nextPosition);
             player.setTexture(SwitchPlayerTexture(player.getBrickNumber(), nextBrick.getBrickNumber()));
             player.move(nextBrick.getBrickCoords(), nextPosition, bricks);
             if (nextBrick.canEatItem()) {
+
                 nextBrick.setHasItem(false);
+                Log.d("can eat item ", nextBrick.getBrickType().toString());
+                Constants.BrickType brickType = nextBrick.getBrickType();
+                if (brickType == Constants.BrickType.PowerUp) {
+                    Log.d("Collect PowerUP", "true");
+                    player.setPowerUP(Constants.PowerUP.Invicibility);
+                    player.setPowerUpTimer(Constants.PowerUPTimer);
+                }
                 mediaPlayerEat.start();
             }
-
+        } else if (player.getPowerUp() == Constants.PowerUP.Immune) {
+            if (player.getTexture() == pacmanDownTexture) {
+                player.setTexture(pacmanWhiteDownTexture);
+            }
+            if (player.getTexture() == pacmanUpTexture) {
+                player.setTexture(pacmanWhiteUpTexture);
+            }
+            if (player.getTexture() == pacmanLeftTexture) {
+                player.setTexture(pacmanWhiteLeftTexture);
+            }
+            if (player.getTexture() == pacmanRightTexture) {
+                player.setTexture(pacmanWhiteRightTexture);
+            }
         }
+
 
         player.Draw();
 
         SetPowerUpEffects();
-
 
         for (Enemy enemy : enemies) {
             if (enemy.getReturnHome()) {
@@ -520,7 +559,7 @@ class Labyrinth {
     void playBackgroundSoundEffects() throws IOException {
         boolean enemyClose = false;
         if (mediaPlayerDangerBackground != null) {
-            Log.d("[playBackgroundSound]", "here");
+            // Log.d("[playBackgroundSound]", "here");
             for (Enemy enemy : enemies) {
                 if (AStar(player.getBrickNumber(), enemy.getBrickNumber()).size() < 10) {
                     enemyClose = true;
@@ -556,7 +595,7 @@ class Labyrinth {
                 case Constants.EasyEnemy:
                     if (frames % 10 == 0) {
                         int nextPosition = enemy.stepsRandom.get(0);
-                        Log.d("[moveEnemy]", "Enemy:" + enemy.getBrickNumber() + " RandomSteps:" + enemy.stepsRandom.toString());
+                        // Log.d("[moveEnemy]", "Enemy:" + enemy.getBrickNumber() + " RandomSteps:" + enemy.stepsRandom.toString());
                         enemy.move(nextPosition, bricks);
                         enemy.stepsRandom.remove(0);
                     }
@@ -594,9 +633,9 @@ class Labyrinth {
     }
 
     ArrayList<Integer> GetEnemyStepsHome(Enemy enemy) {
-        Log.d("[GetEnemyStepsHome]", "enemyHouseCenter: " + GetEnemyHomeCenter());
+        // Log.d("[GetEnemyStepsHome]", "enemyHouseCenter: " + GetEnemyHomeCenter());
         ArrayList<Integer> stepsHome = AStar(enemy.getBrickNumber(), GetEnemyHomeCenter());
-        Log.d("[GetEnemyStepsHome]", "steps home: " + stepsHome);
+        // Log.d("[GetEnemyStepsHome]", "steps home: " + stepsHome);
         return stepsHome;
     }
 
@@ -613,7 +652,12 @@ class Labyrinth {
         return (labyrinthSizeY - 1)  / 2  * labyrinthSizeX + labyrinthSizeX / 2;
     }
 
-    private void PlayerLoseLife() {}
+    private void PlayerLoseLife() {
+        mediaPlayerLoseLife.start();
+        player.setPowerUP(Constants.PowerUP.Immune);
+        player.setPowerUpTimer(Constants.LoseLifeTimer);
+        player.decreaseLives();
+    }
 
     private void AwardPlayerPoints() {}
 
@@ -662,15 +706,15 @@ class Labyrinth {
     private int SwitchPlayerTexture(int currentBrickNumber, int nextBrickNumber) {
         switch(GetNeighborType(currentBrickNumber, nextBrickNumber)) {
             case 0:
-                return pacmanUpTexture;
+                return player.getPowerUp() == Constants.PowerUP.Immune ? pacmanWhiteUpTexture : pacmanUpTexture;
             case 1:
-                return pacmanDownTexture;
+                return player.getPowerUp() == Constants.PowerUP.Immune ? pacmanWhiteDownTexture : pacmanDownTexture;
             case 2:
-                return pacmanRightTexture;
+                return player.getPowerUp() == Constants.PowerUP.Immune ?  pacmanWhiteRightTexture : pacmanRightTexture;
             case 3:
-                return pacmanLeftTexture;
+                return player.getPowerUp() == Constants.PowerUP.Immune ?  pacmanWhiteLeftTexture : pacmanLeftTexture;
             default:
-                return pacmanUpTexture;
+                return player.getPowerUp() == Constants.PowerUP.Immune ?  pacmanWhiteUpTexture : pacmanUpTexture;
         }
     }
 
