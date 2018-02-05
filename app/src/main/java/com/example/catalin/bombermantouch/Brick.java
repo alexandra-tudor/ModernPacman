@@ -98,7 +98,7 @@ public class Brick {
     }
 
     boolean isFree() {
-        return brickType == Constants.BrickType.Free || brickType == Constants.BrickType.PowerUp;
+        return brickType == Constants.BrickType.Free || brickType == Constants.BrickType.PowerUp || brickType == Constants.BrickType.Trap;
     }
 
     boolean isConcrete() {

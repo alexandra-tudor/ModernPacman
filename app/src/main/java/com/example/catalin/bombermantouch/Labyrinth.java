@@ -66,6 +66,7 @@ class Labyrinth {
 
     private Context ctx;
     private MediaPlayer mediaPlayerEat;
+    private MediaPlayer mediaPlayerTrap;
     private MediaPlayer mediaPlayerNoPath;
     private MediaPlayer mediaPlayerEnemyEat;
     private MediaPlayer mediaPlayerLoseLife;
@@ -97,6 +98,8 @@ class Labyrinth {
     private int pacmanWhiteLeftTexture;
     private int pacmanWhiteRightTexture;
 
+    private int trapTexture;
+
     private int enemy1Texture;
     private int enemy1TextureEat;
     private int enemy2Texture;
@@ -119,6 +122,7 @@ class Labyrinth {
 
     private void CreateSounds() {
         mediaPlayerEat = MediaPlayer.create(ctx, R.raw.sound_eat);
+        mediaPlayerTrap = MediaPlayer.create(ctx, R.raw.trap);
         mediaPlayerNoPath = MediaPlayer.create(ctx, R.raw.sound_no_path);
         mediaPlayerEnemyEat = MediaPlayer.create(ctx, R.raw.sound_enemy_eat);
         mediaPlayerDangerBackground = MediaPlayer.create(ctx, R.raw.danger_background_music);
@@ -312,17 +316,17 @@ class Labyrinth {
 
         int crtBrick = 0;
         // Y coordinate
-        for (int i = 0; i < labyrinthSizeY; i ++) {
+        for (int i = 0; i < labyrinthSizeY; i++) {
             // X coordinate
-            for (int j = 0; j < labyrinthSizeX; j ++) {
+            for (int j = 0; j < labyrinthSizeX; j++) {
                 float xPos = (-1f + brickSizeX * j);
                 float yPos = -1f + brickSizeY * i;
 
                 float brickCoords[] = {xPos, yPos, 0.1f,
-                                       xPos, yPos + brickSizeY, 0.1f,
-                                       xPos + brickSizeX, yPos + brickSizeY, 0.1f,
-                                       xPos + brickSizeX, yPos, 0.1f
-                                       };
+                        xPos, yPos + brickSizeY, 0.1f,
+                        xPos + brickSizeX, yPos + brickSizeY, 0.1f,
+                        xPos + brickSizeX, yPos, 0.1f
+                };
 
                 switch (GetBrickTypeFromMap(crtBrick)) {
                     case Wall:
@@ -341,22 +345,25 @@ class Labyrinth {
                         bricks.add(new Brick(crtBrick, GetBrickTypeFromMap(crtBrick), brickCoords, program, wallTexture, false));
                         break;
                 }
-                crtBrick ++;
+                crtBrick++;
             }
         }
-        /*
-        int wallsGenerated = 0;
-        Random rand = new Random();
-        while (wallsGenerated < numberOfWalls) {
-            int nextWall = rand.nextInt(labyrinthSizeX * labyrinthSizeY);
-            Brick brick = bricks.get(nextWall);
-            if (brick.isFree() && nextWall != labyrinthSizeX + 1) {
-                brick.setTexture(wallTexture);
-                brick.setBrickType(Constants.BrickType.Wall);
-                wallsGenerated ++;
+
+        generateTraps(5);
+    }
+
+    void generateTraps(int numberOfTraps) {
+        for(int nt = 0; nt < numberOfTraps; nt++) {
+            boolean noTrapBrick = false;
+            while (!noTrapBrick) {
+                int crtBrick = new Random().nextInt(labyrinthSizeX * labyrinthSizeY);
+                if(bricks.get(crtBrick).getBrickType() == Constants.BrickType.Free) {
+                    bricks.get(crtBrick).setTexture(trapTexture);
+                    bricks.get(crtBrick).setBrickType(Constants.BrickType.Trap);
+                    noTrapBrick = true;
+                }
             }
         }
-        */
     }
 
     private int getCurrentDotTexture(int crtDotTextureIndex) {
@@ -479,6 +486,8 @@ class Labyrinth {
         yellowDotTexture = GraphicTools.SetupImage(R.drawable.dot_yellow, ctx);
         greenDotTexture = GraphicTools.SetupImage(R.drawable.dot_green, ctx);
         powerUpTexture = GraphicTools.SetupImage(R.drawable.dot_power_up, ctx);
+
+        trapTexture = GraphicTools.SetupImage(R.drawable.trap, ctx);
     }
 
     void Draw(int frames) throws IOException {
@@ -536,7 +545,7 @@ class Labyrinth {
         for (Enemy enemy : enemies) {
             if (enemy.getReturnHome()) {
                 if (!enemy.getStepsHome().isEmpty()) {
-                    if (frames % 2 == 0) {
+                    if (frames % 4 == 0) {
                         enemy.move(enemy.getStepsHome().get(0), bricks);
                         enemy.getStepsHome().remove(0);
                     }
@@ -593,11 +602,20 @@ class Labyrinth {
         if (!enemy.stepsRandom.isEmpty()) {
             switch (enemy.getEnemyType()) {
                 case Constants.EasyEnemy:
-                    if (frames % 10 == 0) {
+                    if (frames % 14 == 0) {
                         int nextPosition = enemy.stepsRandom.get(0);
                         // Log.d("[moveEnemy]", "Enemy:" + enemy.getBrickNumber() + " RandomSteps:" + enemy.stepsRandom.toString());
                         enemy.move(nextPosition, bricks);
                         enemy.stepsRandom.remove(0);
+
+                        if (bricks.get(nextPosition).getBrickType() == Constants.BrickType.Trap) {
+                            enemy.setCanBeEaten(false);
+                            enemy.setTexture(enemyAngelTexture);
+                            enemy.setStepsHome(GetEnemyStepsHome(enemy));
+                            enemy.setReturnHome(true);
+                            AwardPlayerPoints();
+                            mediaPlayerTrap.start();
+                        }
                     }
                     break;
                 case Constants.MediumEnemy:

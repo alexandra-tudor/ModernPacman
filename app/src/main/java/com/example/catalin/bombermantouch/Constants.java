@@ -26,7 +26,7 @@ public class Constants {
     public static int StartLives = 3;
 
     public enum BrickType {
-       Free, Wall, Concrete, PowerUp
+       Free, Wall, Concrete, PowerUp, Trap
     }
     public enum ActionType {
         Move, PlaceBomb
