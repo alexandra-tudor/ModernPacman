@@ -46,22 +46,22 @@ class Labyrinth {
 
 
     private static final int[] InitialMap = new int[] {
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1,
             1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1,
             1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1,
             1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1,
             1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1,
-            1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1,
-            0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+            1, 0, 1, 0, 1, 2, 1, 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1,
+            2, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 2,
             1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1,
             1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1,
             1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1,
             1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1,
             1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1,
             1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1,
-            1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1
     };
 
     private Context ctx;
@@ -348,8 +348,6 @@ class Labyrinth {
                 crtBrick++;
             }
         }
-
-        generateTraps(5);
     }
 
     void generateTraps(int numberOfTraps) {
@@ -364,6 +362,15 @@ class Labyrinth {
                 }
             }
         }
+    }
+    void resetTraps() {
+        for (int i = 0; i< bricks.size(); i ++) {
+            if (bricks.get(i).getBrickType() == Constants.BrickType.Trap) {
+                bricks.get(i).setBrickType(Constants.BrickType.Free);
+                bricks.get(i).setTexture(getCurrentDotTexture(new Random().nextInt() % 3));
+            }
+        }
+        player.resetTraps();
     }
 
     private int getCurrentDotTexture(int crtDotTextureIndex) {
@@ -409,7 +416,6 @@ class Labyrinth {
                 xPos + playerSizeX, yPos, 0.1f
         };
         player = new Player(playerCoords, program, pacmanLeftTexture, labyrinthSizeX + 1, Constants.StartLives);
-        //player.setPowerUP(Constants.PowerUP.Invicibility);
         bricks.get(labyrinthSizeX + 1).setPlayerHere(true);
     }
 
@@ -494,18 +500,21 @@ class Labyrinth {
         for (Brick b : bricks) {
             b.Draw();
         }
+
+        if (player.hasPowerUp()) {
+            Log.d("Player PowerUP timer", String.valueOf(player.getPowerUPTimer()));
+            if (player.getPowerUPTimer() > 0) {
+                player.decreasePowerUPTimer();
+            } else {
+                player.setPowerUP(Constants.PowerUP.Normal);
+                resetTraps();
+            }
+        }
+
         if (frames % 2 == 0 && !playerSteps.isEmpty()) {
             int nextPosition = playerSteps.get(0);
             // Log.d("[Draw]", "playerPosition: " + nextPosition);
             playerSteps.remove(0);
-
-            if (player.hasPowerUp()) {
-                if (player.getPowerUPTimer() > 0) {
-                    player.decreasePowerUPTimer();
-                } else {
-                    player.setPowerUP(Constants.PowerUP.Normal);
-                }
-            }
 
             Brick nextBrick = bricks.get(nextPosition);
             player.setTexture(SwitchPlayerTexture(player.getBrickNumber(), nextBrick.getBrickNumber()));
@@ -513,12 +522,15 @@ class Labyrinth {
             if (nextBrick.canEatItem()) {
 
                 nextBrick.setHasItem(false);
-                Log.d("can eat item ", nextBrick.getBrickType().toString());
                 Constants.BrickType brickType = nextBrick.getBrickType();
                 if (brickType == Constants.BrickType.PowerUp) {
-                    Log.d("Collect PowerUP", "true");
-                    player.setPowerUP(Constants.PowerUP.Invicibility);
-                    player.setPowerUpTimer(Constants.PowerUPTimer);
+                    if (player.hasPowerUp()) {
+                        player.setPowerUpTimer(Constants.PowerUPTimer);
+                    } else {
+                        Constants.PowerUP powerUp = choosePowerUP();
+                        player.setPowerUP(powerUp);
+                        player.setPowerUpTimer(Constants.PowerUPTimer);
+                    }
                 }
                 mediaPlayerEat.start();
             }
@@ -563,6 +575,18 @@ class Labyrinth {
         }
 
         playBackgroundSoundEffects();
+    }
+
+    Constants.PowerUP choosePowerUP() {
+        int powerUP = new Random().nextInt(2) + 1;
+        Log.d("PowerUP", String.valueOf(powerUP));
+        switch (powerUP) {
+            case 1:
+                return Constants.PowerUP.Invincibility;
+            case 2:
+                return Constants.PowerUP.Trap;
+        }
+        return Constants.PowerUP.Normal;
     }
 
     void playBackgroundSoundEffects() throws IOException {
@@ -753,12 +777,18 @@ class Labyrinth {
     private void SetPowerUpEffects() {
         if (player.getPowerUp() != Constants.PowerUP.Normal) {
             switch (player.getPowerUp()) {
-                case Invicibility:
+                case Invincibility:
                     for (Enemy enemy : enemies) {
                         if (!enemy.getCanBeEaten() && !enemy.getReturnHome()) {
                             enemy.setTexture(enemy.getTexture() + 1);
                         }
                         enemy.setCanBeEaten(true);
+                    }
+                    break;
+                case Trap:
+                    if(!player.getTraps()) {
+                        generateTraps(Constants.NumberOfTraps);
+                        player.setTraps();
                     }
                     break;
             }

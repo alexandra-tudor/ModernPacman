@@ -19,6 +19,7 @@ class Player {
     private int brickNumber;
     private int powerUPTimer;
     private int lives;
+    private boolean trapsAreSet;
     private Constants.PowerUP powerUp;
 
     private static float uvs[] = new float[]{
@@ -51,7 +52,20 @@ class Player {
         this.powerUp = Constants.PowerUP.Normal;
         this.powerUPTimer = 0;
         this.lives = lives;
+        this.trapsAreSet = false;
         CreateBuffers();
+    }
+
+    void setTraps() {
+        this.trapsAreSet = true;
+    }
+
+    void resetTraps() {
+        this.trapsAreSet = false;
+    }
+
+    boolean getTraps() {
+        return trapsAreSet;
     }
 
     int getPowerUPTimer() {

@@ -133,7 +133,8 @@ public class Brick {
     }
 
     void Draw() {
-        if (hasItem || !isFree()) {
+        boolean isTrap = getBrickType() == Constants.BrickType.Trap;
+        if (isTrap || hasItem || !isFree()) {
             GLES20.glUseProgram(program);
             // get handle to vertex shader's vPosition member
             mPositionHandle = GLES20.glGetAttribLocation(program, "vPosition");

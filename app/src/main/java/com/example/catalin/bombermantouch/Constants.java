@@ -21,9 +21,10 @@ public class Constants {
 
 
     public static int CoordsPerVertex = 3;
-    public static int PowerUPTimer = 20;
-    public static int LoseLifeTimer = 10;
+    public static int PowerUPTimer = 200;
+    public static int LoseLifeTimer = 50;
     public static int StartLives = 3;
+    public static int NumberOfTraps = 4;
 
     public enum BrickType {
        Free, Wall, Concrete, PowerUp, Trap
@@ -33,6 +34,6 @@ public class Constants {
     }
 
     public enum PowerUP {
-        Normal, Invicibility, Immune
+        Normal, Immune, Invincibility, Trap
     }
 }
