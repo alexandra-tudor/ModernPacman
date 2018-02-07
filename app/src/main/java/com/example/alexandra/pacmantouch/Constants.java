@@ -26,7 +26,7 @@ public class Constants {
        Free, Wall, Concrete, PowerUp, Trap
     }
     public enum ActionType {
-        Move, PlaceBomb
+        Move
     }
 
     public enum PowerUP {

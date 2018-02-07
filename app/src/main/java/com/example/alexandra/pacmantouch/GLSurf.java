@@ -5,10 +5,6 @@ import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
-/**
- * Created by Catalin on 19-Nov-16.
- */
-
 public class GLSurf extends GLSurfaceView {
 
     private final GLRenderer mRenderer;

@@ -11,10 +11,6 @@ import java.nio.ShortBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-/**
- * Created by Catalin on 19-Nov-16.
- */
-
 public class GLRenderer implements GLSurfaceView.Renderer {
 
 
