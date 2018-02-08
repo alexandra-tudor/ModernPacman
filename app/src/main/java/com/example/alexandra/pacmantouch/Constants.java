@@ -22,6 +22,13 @@ public class Constants {
     public static int StartLives = 3;
     public static int NumberOfTraps = 4;
 
+
+    public static int PhantomPoints = 100;
+    public static int PowerUPPoints = 150;
+    public static int RedBallPoints = 50;
+    public static int GreenBallPoints = 30;
+    public static int YellowBallPoints = 10;
+
     public enum BrickType {
        Free, Wall, Concrete, PowerUp, Trap
     }

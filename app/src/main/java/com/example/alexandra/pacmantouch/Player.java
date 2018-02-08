@@ -80,11 +80,16 @@ class Player {
     }
 
     void decreaseLives() {
+
         this.lives --;
+        this.lives = Math.max(0, this.lives);
     }
 
+    int getLives() {
+        return this.lives;
+    }
     boolean areAllLivesLost() {
-        return this.lives == 0;
+        return this.lives <= 0;
     }
 
     void setPowerUpTimer(int powerUPTimer) {

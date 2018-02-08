@@ -1,5 +1,6 @@
 package com.example.alexandra.pacmantouch;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -13,9 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class GLRenderer implements GLSurfaceView.Renderer {
 
-
     // Objects
-    private Background background;
     private Labyrinth labyrinth;
     // Our matrices
     private final float[] mtrxProjection = new float[16];
@@ -78,8 +77,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
         gl.glEnable(GL10.GL_BLEND);
-        // Create the triangle
-        background = new Background(this.mContext, this.level);
         switch (this.level) {
             case Constants.EasyLevel:
                 labyrinth = new Labyrinth(this.mContext, 6, screenSize, level);
@@ -106,6 +103,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, (int)mScreenWidth, (int)mScreenHeight);
     }
 
+    public boolean playerHasLost() {
+        return labyrinth.playerHasLost();
+    }
+
     @Override
     public void onDrawFrame(GL10 gl) {
         frames ++;
@@ -114,32 +115,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
        // long now = System.currentTimeMillis();
         //Log.d("Action_Frames", "Frames: " + frames);
 
-        background.Draw();
         try {
             labyrinth.Draw(frames);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*
-        // We should make sure we are valid and sane
-        if (mLastTime > now) return;
-
-        // Get the amount of time the last frame took.
-        long elapsed = now - mLastTime;
-
-        // Set the camera position (View matrix)
-        Matrix.setLookAtM(mtrxView, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-
-        // Calculate the projection and view transformation
-        Matrix.multiplyMM(mtrxProjectionAndView, 0, mtrxProjection, 0, mtrxView, 0);
-
-
-        // Update our example
-        // Render our example
-        Render(mtrxProjectionAndView);
-
-        // Save the current time to see how long it took <img src="http://androidblog.reindustries.com/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley"> .
-        mLastTime = now;
-        */
     }
 }

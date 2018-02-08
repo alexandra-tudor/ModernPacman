@@ -33,7 +33,6 @@ public class Brick {
     private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 
     private final int vertexStride = Constants.CoordsPerVertex * 4; // 4 bytes per vertex
-
     private boolean enemyHere;
     private boolean playerHere;
 
@@ -76,6 +75,9 @@ public class Brick {
         this.texture = texture;
     }
 
+    int getTexture() {
+        return this.texture;
+    }
     void setBrickType(Constants.BrickType brickType) {
         this.brickType = brickType;
     }

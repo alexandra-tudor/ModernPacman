@@ -1,8 +1,16 @@
 package com.example.alexandra.pacmantouch;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
 import android.util.Log;
 
 import java.io.IOException;
@@ -64,6 +72,7 @@ class Labyrinth {
     };
 
     private Context ctx;
+    private Background background;
     private MediaPlayer mediaPlayerEat;
     private MediaPlayer mediaPlayerTrap;
     private MediaPlayer mediaPlayerNoPath;
@@ -110,9 +119,11 @@ class Labyrinth {
     private int enemy5Texture;
     private int enemy5TextureEat;
     private int enemyAngelTexture;
+    private int backgroundTexture;
     private int level;
 
     private int powerUp;
+    private int score;
 
     private ArrayList<Brick> bricks;
     private ArrayList<Enemy> enemies;
@@ -137,14 +148,7 @@ class Labyrinth {
         this.labyrinthSizeY = InitialMapSize[0];
         this.labyrinthSizeX = InitialMapSize[1];
         this.level = level;
-
-        //if (labyrinthSizeY % 2 == 0) {
-        //    labyrinthSizeX += 3;
-        //} else {
-        //    labyrinthSizeX += 4;
-        //}
-
-        //this.numberOfWalls = ((labyrinthSizeY - 2) * (labyrinthSizeX - 2)) / 4;
+        this.score = 0;
 
         program = GraphicTools.CreateShaderProgram(vertexShaderCode, fragmentShaderCode);
 
@@ -153,11 +157,62 @@ class Labyrinth {
 
         playerSteps = new ArrayList<>();
         powerUp = 0;
+
+        // Create the triangle
+        background = new Background(this.ctx, this.level);
+
         LoadTextures();
         CreateLabyrinth();
         CreatePlayer();
         CreateEnemies();
         CreateSounds();
+    }
+    public boolean playerHasLost() {
+        if (player.areAllLivesLost()) {
+            this.mediaPlayerDangerBackground.stop();
+        }
+        return this.player.areAllLivesLost();
+    }
+
+
+    private void createScoreBackgroundTexture() {
+        BitmapDrawable bd = (BitmapDrawable) ctx.getResources().getDrawable(R.drawable.grass);
+        Bitmap bitmap = Bitmap.createBitmap(bd.getBitmap().getWidth(), bd.getBitmap().getHeight(), Bitmap.Config.ARGB_4444);
+
+        Canvas canvas = new Canvas(bitmap);
+        bitmap.eraseColor(0);
+
+        Drawable drawableBG = ctx.getResources().getDrawable(R.drawable.grass);
+        drawableBG.setBounds(0,0, bd.getBitmap().getWidth(), bd.getBitmap().getHeight());
+        drawableBG.draw(canvas);
+
+        // Draw the text
+        Paint textPaint = new Paint();
+        textPaint.setTextSize(128);
+        textPaint.setAntiAlias(true);
+        textPaint.setColor(Color.BLACK);
+        canvas.drawText("Score: " + this.score, screenSize.x - 100, 100, textPaint);
+        textPaint.setColor(Color.BLUE);
+        canvas.drawText("Lives: " + this.player.getLives(), screenSize.x - 100, 250, textPaint);
+        int[] textureHandle = new int[1];
+
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        GLES20.glEnable(GLES20.GL_BLEND);
+
+        // Bind to the texture in OpenGL
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+        // Set filtering
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+        // Load the bitmap into the bound texture.
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+        // Recycle the bitmap, since its data has been loaded into OpenGL.
+        bitmap.recycle();
+
+        this.background.setBackgroundTexture(textureHandle[0]);
     }
 
     private float manhattan(int x, int y) {
@@ -168,16 +223,14 @@ class Labyrinth {
         int coordYY = y / labyrinthSizeY;
 
         return Math.abs(coordXX - coordYX) + Math.abs(coordXY - coordYY);
-
     }
+
 
     private ArrayList<Integer> getNeighbors(int current, boolean allNeighbors) {
         int currentTop = current + labyrinthSizeX;
         int currentBottom = current - labyrinthSizeX;
         int currentLeft = current - 1;
         int currentRight = current + 1;
-
-
 
         // Log.d("[getNeighbors]", "neighbors: " +  new Integer[] {currentTop, currentBottom, currentLeft, currentRight});
         ArrayList<Integer> neighbors = new ArrayList<>();
@@ -496,6 +549,9 @@ class Labyrinth {
     }
 
     void Draw(int frames) throws IOException {
+        createScoreBackgroundTexture();
+        background.Draw();
+
         for (Brick b : bricks) {
             b.Draw();
         }
@@ -521,8 +577,23 @@ class Labyrinth {
             if (nextBrick.canEatItem()) {
 
                 nextBrick.setHasItem(false);
+                int brickTexture = nextBrick.getTexture();
+
+                if (brickTexture == redDotTexture) {
+                    AwardPlayerPoints(Constants.RedBallPoints);
+                }
+
+                if (brickTexture == greenDotTexture) {
+                    AwardPlayerPoints(Constants.GreenBallPoints);
+                }
+
+                if (brickTexture == yellowDotTexture) {
+                    AwardPlayerPoints(Constants.YellowBallPoints);
+                }
+
                 Constants.BrickType brickType = nextBrick.getBrickType();
                 if (brickType == Constants.BrickType.PowerUp) {
+                    AwardPlayerPoints(Constants.PowerUPPoints);
                     if (player.hasPowerUp()) {
                         player.setPowerUpTimer(Constants.PowerUPTimer);
                     } else {
@@ -552,27 +623,27 @@ class Labyrinth {
         player.Draw();
 
         SetPowerUpEffects();
-
         for (Enemy enemy : enemies) {
-            if (enemy.getReturnHome()) {
-                if (!enemy.getStepsHome().isEmpty()) {
-                    if (frames % 4 == 0) {
-                        enemy.move(enemy.getStepsHome().get(0), bricks);
-                        enemy.getStepsHome().remove(0);
+            if (!player.areAllLivesLost()) {
+                if (enemy.getReturnHome()) {
+                    if (!enemy.getStepsHome().isEmpty()) {
+                        if (frames % 4 == 0) {
+                            enemy.move(enemy.getStepsHome().get(0), bricks);
+                            enemy.getStepsHome().remove(0);
+                        }
+                    } else {
+                        enemy.setReturnHome(false);
+                        enemy.setTexture(getCurrentEnemyTexture(new Random().nextInt(5)));
+                        enemy.stepsRandom.clear();
                     }
                 } else {
-                    enemy.setReturnHome(false);
-                    enemy.setTexture(getCurrentEnemyTexture(new Random().nextInt(5)));
-                    enemy.stepsRandom.clear();
+                    moveEnemy(enemy, frames);
                 }
-            } else {
-                moveEnemy(enemy, frames);
             }
-
             enemy.Draw();
             ChooseEnemyPlayerAction(enemy);
-        }
 
+        }
         playBackgroundSoundEffects();
     }
 
@@ -636,7 +707,7 @@ class Labyrinth {
                             enemy.setTexture(enemyAngelTexture);
                             enemy.setStepsHome(GetEnemyStepsHome(enemy));
                             enemy.setReturnHome(true);
-                            AwardPlayerPoints();
+                            AwardPlayerPoints(Constants.PhantomPoints);
                             mediaPlayerTrap.start();
                         }
                     }
@@ -662,7 +733,7 @@ class Labyrinth {
                 enemy.setTexture(enemyAngelTexture);
                 enemy.setStepsHome(GetEnemyStepsHome(enemy));
                 enemy.setReturnHome(true);
-                AwardPlayerPoints();
+                AwardPlayerPoints(Constants.PhantomPoints);
                 mediaPlayerEnemyEat.start();
             }
             if (player.getPowerUp() != Constants.PowerUP.Normal) {
@@ -700,7 +771,9 @@ class Labyrinth {
         player.decreaseLives();
     }
 
-    private void AwardPlayerPoints() {}
+    private void AwardPlayerPoints(int points) {
+        this.score += points;
+    }
 
     private Constants.BrickType GetBrickType(int crtBrick) {
         if (crtBrick < labyrinthSizeX ||

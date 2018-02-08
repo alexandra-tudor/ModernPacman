@@ -6,9 +6,13 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+
+import java.util.logging.Level;
 
 public class MainActivity extends Activity {
 

@@ -8,6 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+
 class Background {
     private FloatBuffer vertexBuffer;
     private ShortBuffer drawListBuffer;
@@ -86,21 +87,22 @@ class Background {
         uvBuffer.position(0);
     }
 
-    private void LoadTextures(Context ctx)
-    {
-        switch(this.level) {
+    private void LoadTextures(Context ctx) {
+        switch (this.level) {
             case Constants.EasyLevel:
-                backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.grass, ctx);
+                this.backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.grass, ctx);
                 break;
             case Constants.MediumLevel:
-                backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.leaves, ctx);
+                this.backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.leaves, ctx);
                 break;
             case Constants.HardLevel:
-                backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.ice, ctx);
+                this.backgroundTexture = GraphicTools.SetupImage(com.example.alexandra.pacmantouch.R.drawable.ice, ctx);
                 break;
         }
+    }
 
-
+    void setBackgroundTexture(int backgroundTexture) {
+        this.backgroundTexture = backgroundTexture;
     }
 
     void Draw() {
@@ -131,7 +133,7 @@ class Background {
         // Get handle to textures locations
         int mSamplerLoc = GLES20.glGetUniformLocation (program, "s_texture" );
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTexture);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,  this.backgroundTexture);
 
         // Set the sampler texture unit to 0, where we have saved the texture.
         GLES20.glUniform1i ( mSamplerLoc, 0);
